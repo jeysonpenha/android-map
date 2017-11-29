@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">androidmap</string>
-    <string name="drawer_open">Abre menu</string>
-    <string name="drawer_close">Fecha menu</string>
+    <string name="drawer_open">open</string>
+    <string name="drawer_close">close</string>
 
     <string name="debug_category">DEBUG</string>
+
+    <string name="last_latitude">lastLat</string>
+    <string name="last_longitude">lastLon</string>
+    <string name="last_zoom">lastZoom</string>
+
+    <string name="init_mark_title">Your Actual Position!</string>
+    <string name="init_mark_desc">Your are here! Well, is what your cellphone says...</string>
+
+
 
 </resources>

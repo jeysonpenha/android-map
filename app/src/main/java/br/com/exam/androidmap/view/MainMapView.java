@@ -1,9 +1,10 @@
 package br.com.exam.androidmap.view;
 
-/**
- * Created by yande on 28/11/2017.
- */
+import android.location.Address;
+import android.support.v4.app.FragmentActivity;
 
 public interface MainMapView {
+
+    FragmentActivity getViewActivity();
 
 }

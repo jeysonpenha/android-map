@@ -13,76 +13,40 @@ import android.util.Log;
 
 import br.com.exam.androidmap.R;
 
-/**
- * Created by yande on 28/11/2017.
- */
-
 public class MainActivity extends AppCompatActivity {
 
-    //Components
-    DrawerLayout drawerPrincipal;
-    RecyclerView menuLateral;
+    DrawerLayout drawer;
+    RecyclerView menu;
     Toolbar toolbar;
 
-    ActionBarDrawerToggle togglePrincipal;
+    ActionBarDrawerToggle toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i(getResources().getString(R.string.debug_category), "onCreate() - MainActivity");
-
-        //Seta Interface Principal.
         setContentView(R.layout.layout_main);
 
-        //Inicia o menu.
-        drawerPrincipal = findViewById(R.id.drawer);
-        menuLateral = findViewById(R.id.menu);
+        drawer = findViewById(R.id.drawer);
+        menu = findViewById(R.id.menu);
         toolbar = findViewById(R.id.toolbar);
 
-        iniciarActionBar(drawerPrincipal, menuLateral, toolbar);
+        iniciarActionBar(drawer, menu, toolbar);
 
-        //Inicia o Fragmento inicial.
         MainMapFragment mapFragment = (MainMapFragment) Fragment.instantiate(this, MainMapFragment.class.getName());
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mapFragment).commit();
     }
 
-    @Override
-    public void onStop(){
-        super.onStop();
-        Log.i(getResources().getString(R.string.debug_category), "onStop() - MainActivity");
-    }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        Log.i(getResources().getString(R.string.debug_category), "onDestroy() - MainActivity");
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-
-        Log.i(getResources().getString(R.string.debug_category), "onResume() - MainActivity");
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-
-        Log.i(getResources().getString(R.string.debug_category), "onPause() - MainActivity");
-    }
-
     protected void iniciarActionBar(DrawerLayout drawerPrincipal, RecyclerView menuLateral, Toolbar toolbar) {
         toolbar.setTitle("");
         this.setSupportActionBar(toolbar);
-        this.togglePrincipal = new ActionBarDrawerToggle(this, drawerPrincipal, toolbar, R.string.drawer_open, R.string.drawer_close);
+        this.toggle = new ActionBarDrawerToggle(this, drawerPrincipal, toolbar, R.string.drawer_open, R.string.drawer_close);
 
-        drawerPrincipal.addDrawerListener(this.togglePrincipal);
+        drawerPrincipal.addDrawerListener(this.toggle);
         drawerPrincipal.post(new Runnable() {
             public void run() {
-                togglePrincipal.syncState();
+                toggle.syncState();
             }
         });
 
@@ -91,5 +55,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
-
