@@ -9,6 +9,7 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
+import br.com.exam.androidmap.R;
 import br.com.exam.androidmap.presenter.MapPresenter;
 
 public class GeocodeTask extends AsyncTask<String, Void, Address> {
@@ -45,7 +46,7 @@ public class GeocodeTask extends AsyncTask<String, Void, Address> {
         if(address != null) {
             presenter.goToAddress(address, 10f);
         } else {
-            Toast.makeText(context, "Address not found.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.address_not_found) , Toast.LENGTH_SHORT).show();
         }
     }
 }

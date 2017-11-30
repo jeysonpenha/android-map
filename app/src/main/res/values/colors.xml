@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-
-    <color name="COR_FUNDO_CLARISSIMO">#757575</color>
-    <color name="COR_FUNDO_CLARO">#4f4f4f</color>
-    <color name="COR_FUNDO">#292929</color>
-    <color name="COR_FUNDO_ESCURO">#1c1c1c</color>
-    <color name="COR_FUNDO_ESCURISSIMO">#101010</color>
+    <color name="main_color_light">#4f4f4f</color>
+    <color name="main_color">#292929</color>
+    <color name="main_color_dark">#1c1c1c</color>
 </resources>

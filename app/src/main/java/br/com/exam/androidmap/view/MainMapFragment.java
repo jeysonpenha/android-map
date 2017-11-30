@@ -1,27 +1,36 @@
 package br.com.exam.androidmap.view;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Locale;
 
 import br.com.exam.androidmap.R;
-import br.com.exam.androidmap.core.App;
+import br.com.exam.androidmap.core.Util;
+import br.com.exam.androidmap.model.MapInteractor;
+import br.com.exam.androidmap.model.MapInteractorImpl;
 import br.com.exam.androidmap.presenter.MapPresenter;
 import br.com.exam.androidmap.presenter.MapPresenterImpl;
 
@@ -29,47 +38,47 @@ import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
 public class MainMapFragment extends Fragment implements MainMapView {
 
+    public static final int LOCATION_PERMISSION_ID = 150;
+    public static final String PREFS_MAP = "mapsPref";
+
     private MapPresenter presenter;
+
     private GoogleMap googleMap;
-    private MapView vMapView;
+    private MapView mapView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
 
-        presenter = new MapPresenterImpl(this);
+        MapInteractor interactor = new MapInteractorImpl(this.getContext());
+        presenter = new MapPresenterImpl(this, interactor);
+
         View view = inflater.inflate(R.layout.fragment_map, null);
 
-        vMapView = view.findViewById(R.id.map);
-        vMapView.onCreate(savedInstanceState);
-        vMapView.onResume();
+        mapView = view.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
 
-        MapsInitializer.initialize(getActivity().getApplicationContext());
-
-
-
-        return view;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        vMapView.getMapAsync(new OnMapReadyCallback() {
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @SuppressLint("StringFormatInvalid")
             @Override
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
-                presenter.initMap(googleMap);
 
                 requestPermissions(
                         new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                        App.LOCATION_PERMISSION_ID
+                        LOCATION_PERMISSION_ID
                 );
 
-                presenter.recoverLastPosition();
+                recoverLastPosition();
             }
         });
+
+        initFavoriteList();
+
+        MapsInitializer.initialize(getActivity().getApplicationContext());
+
+        return view;
     }
 
     @Override
@@ -77,7 +86,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
         super.onStop();
 
         if(googleMap != null) {
-            presenter.storeLastPosition(
+            storeLastPosition(
                     googleMap.getCameraPosition().target.latitude,
                     googleMap.getCameraPosition().target.longitude,
                     googleMap.getCameraPosition().zoom);
@@ -92,7 +101,11 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                presenter.onLocationChanged(location);
+                createMarker(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        getActivity().getResources().getString(R.string.init_mark_title),
+                        getActivity().getResources().getString(R.string.init_mark_desc));
             }
 
             @Override
@@ -106,7 +119,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
         };
 
         switch ( requestCode ) {
-            case App.LOCATION_PERMISSION_ID: {
+            case LOCATION_PERMISSION_ID: {
                 if ( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
                     if(checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 100, locationListener);
@@ -117,8 +130,100 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     @Override
-    public FragmentActivity getViewActivity(){
-        return getActivity();
+    public void createMarker(Double latitude, Double longitude, String title, String desc) {
+        LatLng position = new LatLng(latitude, longitude);
+
+        googleMap.addMarker(
+                new MarkerOptions()
+                        .position(position)
+                        .title(title)
+                        .snippet(desc));
+
     }
 
+    @Override
+    public void goToAddress(Address address, Float zoom){
+        if(googleMap != null) {
+            LatLng startPos = new LatLng(address.getLatitude(), address.getLongitude());
+
+            CameraPosition cameraPosition =
+                    new CameraPosition
+                            .Builder()
+                            .target(startPos)
+                            .zoom(zoom)
+                            .build();
+
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
+
+    public void storeLastPosition(double lat, double lon, float zoom) {
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_MAP, 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        editor = Util.putPreferencesDouble(editor,
+                getActivity()
+                        .getResources()
+                        .getString(R.string.last_latitude)
+                , lat);
+
+        editor = Util.putPreferencesDouble(editor,
+                getActivity()
+                        .getResources()
+                        .getString(R.string.last_longitude)
+                , lon);
+
+        editor.putFloat(getActivity()
+                    .getResources()
+                    .getString(R.string.last_zoom)
+                , zoom);
+
+        editor.apply();
+    }
+
+    public void recoverLastPosition() {
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_MAP, 0);
+
+        if(settings.contains(getActivity()
+                .getResources()
+                .getString(R.string.last_latitude))) {
+
+            double lat = Util.getPreferencesDouble(settings, getActivity()
+                                                                .getResources()
+                                                                .getString(R.string.last_latitude));
+
+            double lon = Util.getPreferencesDouble(settings, getActivity()
+                                                                .getResources()
+                                                                .getString(R.string.last_longitude));
+
+            float zoom = settings.getFloat(getActivity()
+                                                .getResources()
+                                                .getString(R.string.last_zoom), 0f);
+
+            Address lastAddress = new Address(Locale.getDefault());
+
+            lastAddress.setLatitude(lat);
+            lastAddress.setLongitude(lon);
+
+            goToAddress(lastAddress, zoom);
+        }
+    }
+
+    public void initFavoriteList(){
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_MAP, 0);
+        if(!settings.contains(getActivity()
+                .getResources()
+                .getString(R.string.fav_list_read))) {
+
+            presenter.readFavoriteList();
+            SharedPreferences.Editor editor = settings.edit();
+
+            editor.putBoolean(getActivity()
+                            .getResources()
+                            .getString(R.string.fav_list_read)
+                    , true);
+
+            editor.apply();
+        }
+    }
 }

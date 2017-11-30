@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:layout_height="wrap_content"
-        android:background="@color/COR_FUNDO_ESCURO"
+        android:background="@color/main_color_dark"
         android:elevation="4dp" />
 
     <android.support.v4.widget.DrawerLayout
@@ -28,14 +28,14 @@
 	        android:layout_width="300dp"
 	        android:layout_gravity="left"
 	        android:layout_height="match_parent"
-	        android:background="@color/COR_FUNDO" >
+	        android:background="@color/main_color" >
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/menu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@color/COR_FUNDO"
-                android:background="@color/COR_FUNDO"
+                android:divider="@color/main_color"
+                android:background="@color/main_color"
                 />
 
 	    </RelativeLayout>

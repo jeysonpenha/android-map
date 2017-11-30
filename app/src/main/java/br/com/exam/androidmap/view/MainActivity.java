@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import br.com.exam.androidmap.R;
 
@@ -31,27 +30,26 @@ public class MainActivity extends AppCompatActivity {
         menu = findViewById(R.id.menu);
         toolbar = findViewById(R.id.toolbar);
 
-        iniciarActionBar(drawer, menu, toolbar);
+        initActionBar();
 
         MainMapFragment mapFragment = (MainMapFragment) Fragment.instantiate(this, MainMapFragment.class.getName());
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mapFragment).commit();
     }
 
-    protected void iniciarActionBar(DrawerLayout drawerPrincipal, RecyclerView menuLateral, Toolbar toolbar) {
+    protected void initActionBar() {
         toolbar.setTitle("");
         this.setSupportActionBar(toolbar);
-        this.toggle = new ActionBarDrawerToggle(this, drawerPrincipal, toolbar, R.string.drawer_open, R.string.drawer_close);
+        this.toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
 
-        drawerPrincipal.addDrawerListener(this.toggle);
-        drawerPrincipal.post(new Runnable() {
+        drawer.addDrawerListener(this.toggle);
+        drawer.post(new Runnable() {
             public void run() {
                 toggle.syncState();
             }
         });
 
         LinearLayoutManager mLayoutManagerI = new LinearLayoutManager(this);
-        menuLateral.setLayoutManager(mLayoutManagerI);
+        menu.setLayoutManager(mLayoutManagerI);
     }
-
 }

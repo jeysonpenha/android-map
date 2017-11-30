@@ -9,9 +9,18 @@
     <string name="last_longitude">lastLon</string>
     <string name="last_zoom">lastZoom</string>
 
+    <string name="fav_list_read">favListRead</string>
+
     <string name="init_mark_title">Your Actual Position!</string>
     <string name="init_mark_desc">Your are here! Well, is what your cellphone says...</string>
 
+    <string name="address_not_found">Address not found.</string>
 
+    <string name="json_favorites">favorites</string>
+    <string name="json_name">name</string>
+    <string name="json_latitude">latitude</string>
+    <string name="json_longitude">longitude</string>
+
+    <string name="favorite_url">http://www.mocky.io/v2/59dbaacc110000590007481d</string>
 
 </resources>
