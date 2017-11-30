@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.exam.androidmap.R;
@@ -54,12 +53,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         mapFragment.init(presenter);
 
         adapter = new MarkerAdapter(this, presenter);
+        menu.setAdapter(adapter);
+
+        readCloudBookmarkList();
 
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_content, mapFragment).commit();
-
-        menu.setAdapter(adapter);
-
     }
 
     protected void initActionBar() {
@@ -79,8 +78,35 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
     }
 
     @Override
-    public void updateBookmarkList(List<Marker> markers) {
-        adapter.updateList(markers);
-        adapter.notifyDataSetChanged();
+    public void updateBookmarkList(final List<Marker> markers) {
+        this.runOnUiThread(new Runnable() {
+            public void run(){
+                adapter.updateList(markers);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void closeDrawer(){
+        drawer.closeDrawers();
+    }
+
+    public void readCloudBookmarkList(){
+        SharedPreferences settings = this.getSharedPreferences(PREFS_MAP, 0);
+        if(!settings.contains(this
+                .getResources()
+                .getString(R.string.fav_list_read))) {
+
+            presenter.readCloudBookmarkList();
+            SharedPreferences.Editor editor = settings.edit();
+
+            editor.putBoolean(this
+                            .getResources()
+                            .getString(R.string.fav_list_read)
+                    , true);
+
+            editor.apply();
+        }
     }
 }

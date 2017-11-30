@@ -4,8 +4,6 @@ import java.util.List;
 
 public interface MarkerManager {
 
-    Marker getMarker(Integer id);
-
     List<Marker> getAllMarkers();
 
     void deleteMarker(Integer id);

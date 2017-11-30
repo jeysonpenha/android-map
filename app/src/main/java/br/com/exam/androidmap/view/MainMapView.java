@@ -10,4 +10,6 @@ public interface MainMapView {
 
     void goToLocation(double latitude, double longitude, float zoom);
 
+    void cleanMarkers();
+
 }

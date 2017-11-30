@@ -30,6 +30,7 @@ public class MapPresenterImpl implements MapPresenter {
 
     @Override
     public void goToLocation(double lat, double lon, float zoom) {
+        mainActivityView.closeDrawer();
         mainMapView.goToLocation(lat, lon, zoom);
     }
 
@@ -39,15 +40,12 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void goToBookmark(Marker marker) {
-
-    }
-
-    @Override
     public void deleteBookmark(Marker marker) {
+        mainActivityView.closeDrawer();
         mapInteractor.removeMarker(marker.id);
         mapInteractor.getMarkersList();
         mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
+        drawAllBookmarkList();
     }
 
     @Override
@@ -59,7 +57,6 @@ public class MapPresenterImpl implements MapPresenter {
         marker.longitude = lon;
 
         mapInteractor.addMarker(marker);
-        mapInteractor.getMarkersList();
 
         mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
     }
@@ -70,7 +67,15 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void initBookmarkList() {
+    public void updateBookmarkList(){
+        mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
+        drawAllBookmarkList();
+    }
+
+    @Override
+    public void drawAllBookmarkList() {
+        mainMapView.cleanMarkers();
+
         List<Marker> markers = mapInteractor.getMarkersList();
 
         if(markers != null) {

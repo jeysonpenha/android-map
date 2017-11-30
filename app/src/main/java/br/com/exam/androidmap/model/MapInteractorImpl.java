@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.exam.androidmap.R;
@@ -84,6 +83,8 @@ public class MapInteractorImpl implements MapInteractor {
 
                                 markerManager.addMarker(marker);
                             }
+
+                            presenter.updateBookmarkList();
 
                         } catch (JSONException e) {
                             e.printStackTrace();

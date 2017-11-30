@@ -56,6 +56,16 @@ public class MarkerAdapter extends RecyclerView.Adapter {
                 showDeleteDialog(pos);
             }
         });
+
+        markerViewHolder.name.setOnClickListener(new View.OnClickListener() {
+            final int pos = position;
+
+            @Override
+            public void onClick(View v) {
+                Marker marker = markers.get(pos);
+                presenter.goToLocation(marker.latitude, marker.longitude, 20f);
+            }
+        });
     }
 
     @Override

@@ -60,7 +60,6 @@ public class MainMapFragment extends Fragment implements MainMapView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initFavoriteList();
         initLocationManager();
 
         View view = inflater.inflate(R.layout.fragment_map, null);
@@ -85,7 +84,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
+                showSearchDialog();
             }
         });
 
@@ -111,13 +110,13 @@ public class MainMapFragment extends Fragment implements MainMapView {
                 recoverLastPosition();
 
                 if(presenter != null) {
-                    presenter.initBookmarkList();
+                    presenter.drawAllBookmarkList();
                 }
+
             }
         });
 
         MapsInitializer.initialize(activity);
-
         return view;
     }
 
@@ -188,6 +187,19 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     @Override
+    public void cleanMarkers(){
+        activity.runOnUiThread(new Runnable(){
+            public void run(){
+                googleMap.clear();
+
+                if(actualLocation != null) {
+                    drawStartPosition(actualLocation);
+                }
+            }
+        });
+    }
+
+    @Override
     public void goToLocation(double latitude, double longitude, float zoom){
         if(googleMap != null) {
             LatLng startPos = new LatLng(latitude, longitude);
@@ -250,32 +262,15 @@ public class MainMapFragment extends Fragment implements MainMapView {
         }
     }
 
-    public void initFavoriteList(){
-        SharedPreferences settings = activity.getSharedPreferences(PREFS_MAP, 0);
-        if(!settings.contains(activity
-                .getResources()
-                .getString(R.string.fav_list_read))) {
-
-            presenter.initBookmarkList();
-            SharedPreferences.Editor editor = settings.edit();
-
-            editor.putBoolean(activity
-                            .getResources()
-                            .getString(R.string.fav_list_read)
-                    , true);
-
-            editor.apply();
-        }
-    }
-
-    public void initStartPosition(Location location){
+    public void drawStartPosition(Location location){
         drawMarker(
                 location.getLatitude(),
                 location.getLongitude(),
                 activity.getResources().getString(R.string.init_mark_title),
                 activity.getResources().getString(R.string.init_mark_desc));
+    }
 
-
+    public void goToStartPosition(Location location){
         SharedPreferences settings = activity.getSharedPreferences(PREFS_MAP, 0);
 
         if(!settings.contains(activity
@@ -291,7 +286,8 @@ public class MainMapFragment extends Fragment implements MainMapView {
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 actualLocation = location;
-                initStartPosition(location);
+                drawStartPosition(location);
+                goToStartPosition(location);
             }
 
             @Override
@@ -368,5 +364,34 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public void showSearchDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setMessage(R.string.dialog_search_desc).setTitle(R.string.dialog_search_title);
+
+        final EditText input = new EditText(activity);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.dialog_search, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                presenter.searchAddress(input.getText().toString());
+
+            }
+        });
+
+        builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 }

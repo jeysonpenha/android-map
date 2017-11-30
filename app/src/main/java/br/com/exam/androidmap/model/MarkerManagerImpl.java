@@ -21,7 +21,6 @@ public class MarkerManagerImpl implements MarkerManager {
         this.sqLiteManager = sqLiteManager;
     }
 
-    @Override
     public Marker getMarker(Integer id) {
 
         Cursor cursor;
@@ -59,17 +58,21 @@ public class MarkerManagerImpl implements MarkerManager {
 
         cursor = db.query(TABLE, fields ,null, null, null, null, null, null);
 
-        if(cursor != null){
-            markers = new ArrayList<>();
+        try {
+            if (cursor != null) {
+                markers = new ArrayList<>();
 
-            while(cursor.moveToNext()) {
-                Marker marker = new Marker();
-                marker.id = cursor.getInt(0);
-                marker.name = cursor.getString(1);
-                marker.longitude = cursor.getDouble(2);
-                marker.latitude = cursor.getDouble(3);
-                markers.add(marker);
+                while (cursor.moveToNext()) {
+                    Marker marker = new Marker();
+                    marker.id = cursor.getInt(0);
+                    marker.name = cursor.getString(1);
+                    marker.longitude = cursor.getDouble(2);
+                    marker.latitude = cursor.getDouble(3);
+                    markers.add(marker);
+                }
             }
+        }catch(IllegalStateException e) {
+            e.printStackTrace();
         }
 
         db.close();

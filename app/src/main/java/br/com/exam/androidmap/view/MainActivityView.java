@@ -8,4 +8,6 @@ public interface MainActivityView {
 
     void updateBookmarkList(List<Marker> markers);
 
+    void closeDrawer();
+
 }

@@ -1,7 +1,5 @@
 package br.com.exam.androidmap.presenter;
 
-import android.location.Address;
-
 import java.util.List;
 
 import br.com.exam.androidmap.model.Marker;
@@ -14,15 +12,15 @@ public interface MapPresenter {
 
     void drawMarker(Marker marker, String desc);
 
-    void goToBookmark(Marker marker);
-
     void deleteBookmark(Marker marker);
 
     void addBookmark(double lat, double lon, String name);
 
     void readCloudBookmarkList();
 
-    void initBookmarkList();
+    void updateBookmarkList();
+
+    void drawAllBookmarkList();
 
     List<Marker> getBookmarkList();
 
