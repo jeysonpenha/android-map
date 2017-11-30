@@ -97,4 +97,9 @@ public class MapInteractorImpl implements MapInteractor {
     public void addMarker(Marker marker) {
         markerManager.addMarker(marker);
     }
+
+    @Override
+    public void removeMarker(int id) {
+        markerManager.deleteMarker(id);
+    }
 }

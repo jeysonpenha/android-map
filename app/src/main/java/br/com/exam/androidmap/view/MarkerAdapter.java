@@ -1,11 +1,17 @@
 package br.com.exam.androidmap.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -37,10 +43,19 @@ public class MarkerAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         MarkerViewHolder markerViewHolder = (MarkerViewHolder) holder;
         Marker marker = markers.get(position);
         markerViewHolder.name.setText(marker.name);
+
+        markerViewHolder.delete.setOnClickListener(new View.OnClickListener() {
+            final int pos = position;
+
+            @Override
+            public void onClick(View v) {
+                showDeleteDialog(pos);
+            }
+        });
     }
 
     @Override
@@ -53,17 +68,42 @@ public class MarkerAdapter extends RecyclerView.Adapter {
         return markers.size();
     }
 
+    public void updateList(List<Marker> markers) {
+        this.markers = markers;
+        notifyDataSetChanged();
+    }
+
     public class MarkerViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
+        final ImageView delete;
 
         public MarkerViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.name);
+            delete = view.findViewById(R.id.delete);
         }
     }
 
-    public void updateList(List<Marker> markers) {
-        this.markers = markers;
-        notifyDataSetChanged();
+    public void showDeleteDialog(final int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setMessage(R.string.dialog_delete_desc).setTitle(R.string.dialog_delete_title);
+
+        builder.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Marker marker = markers.get(position);
+                presenter.deleteBookmark(marker);
+                Toast.makeText(context, context.getString(R.string.dialog_delete_ok) , Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

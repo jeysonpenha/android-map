@@ -16,4 +16,5 @@ public interface MapInteractor {
 
     void addMarker(Marker marker);
 
+    void removeMarker(int id);
 }

@@ -45,7 +45,9 @@ public class MapPresenterImpl implements MapPresenter {
 
     @Override
     public void deleteBookmark(Marker marker) {
-
+        mapInteractor.removeMarker(marker.id);
+        mapInteractor.getMarkersList();
+        mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
     }
 
     @Override

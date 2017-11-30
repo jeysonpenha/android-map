@@ -31,4 +31,9 @@
     <string name="dialog_save_desc">Give a name to the New Bookmark</string>
     <string name="dialog_save_ok">Bookmark Saved!</string>
 
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_delete_title">Delete Bookmark</string>
+    <string name="dialog_delete_desc">Confirm deletion of the Bookmark?</string>
+    <string name="dialog_delete_ok">Bookmark Deleted!</string>
+
 </resources>
