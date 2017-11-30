@@ -8,4 +8,8 @@ public interface MarkerManager {
 
     List<Marker> getAllMarkers();
 
+    void deleteMarker(Integer id);
+
+    void addMarker(Marker marker);
+
 }

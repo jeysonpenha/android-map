@@ -15,6 +15,7 @@
     <string name="init_mark_desc">Your are here! Well, is what your cellphone says...</string>
 
     <string name="address_not_found">Address not found.</string>
+    <string name="no_location_permission">You need to give location permission.</string>
 
     <string name="json_favorites">favorites</string>
     <string name="json_name">name</string>

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void initActionBar() {
-        toolbar.setTitle("");
+        toolbar.setTitle("Easy Android Test");
         this.setSupportActionBar(toolbar);
         this.toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
 

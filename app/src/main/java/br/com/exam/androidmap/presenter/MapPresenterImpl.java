@@ -2,6 +2,8 @@ package br.com.exam.androidmap.presenter;
 
 import android.location.Address;
 
+import java.io.File;
+
 import br.com.exam.androidmap.model.MapInteractor;
 import br.com.exam.androidmap.model.Marker;
 import br.com.exam.androidmap.view.MainMapView;
@@ -24,8 +26,8 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void goToAddress(Address adress, float zoom) {
-        mainMapView.goToAddress(adress, zoom);
+    public void goToLocation(double lat, double lon, float zoom) {
+        mainMapView.goToLocation(lat, lon, zoom);
     }
 
     @Override
@@ -51,5 +53,10 @@ public class MapPresenterImpl implements MapPresenter {
     @Override
     public void readFavoriteList() {
         mapInteractor.initFavoriteList();
+    }
+
+    @Override
+    public void initInternalList() {
+        mapInteractor.initInternalList();
     }
 }

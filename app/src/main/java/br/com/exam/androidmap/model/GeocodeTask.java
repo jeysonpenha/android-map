@@ -44,7 +44,7 @@ public class GeocodeTask extends AsyncTask<String, Void, Address> {
     @Override
     protected void onPostExecute(Address address) {
         if(address != null) {
-            presenter.goToAddress(address, 10f);
+            presenter.goToLocation(address.getLatitude(), address.getLongitude(), 10f);
         } else {
             Toast.makeText(context, context.getString(R.string.address_not_found) , Toast.LENGTH_SHORT).show();
         }

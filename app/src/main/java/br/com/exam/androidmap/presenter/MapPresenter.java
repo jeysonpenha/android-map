@@ -8,7 +8,7 @@ public interface MapPresenter {
 
     void searchAddress(String name);
 
-    void goToAddress(Address address, float zoom);
+    void goToLocation(double lat, double lon, float zoom);
 
     void createMarker(Marker marker, String desc);
 
@@ -19,5 +19,7 @@ public interface MapPresenter {
     void addFavorite(Marker marker);
 
     void readFavoriteList();
+
+    void initInternalList();
 
 }

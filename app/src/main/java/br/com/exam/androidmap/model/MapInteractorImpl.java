@@ -22,9 +22,13 @@ public class MapInteractorImpl implements MapInteractor {
 
     private Context context;
     private MapPresenter presenter;
+    private SQLiteManager sqliteManager;
+    private MarkerManager markerManager;
 
     public MapInteractorImpl(Context context) {
         this.context = context;
+        sqliteManager = new SQLiteManager(context);
+        markerManager = new MarkerManagerImpl(sqliteManager);
     }
 
     @Override
@@ -36,6 +40,17 @@ public class MapInteractorImpl implements MapInteractor {
     public void searchAddress(String name) {
         GeocodeTask geocodeTask = new GeocodeTask(context, presenter);
         geocodeTask.execute(name);
+    }
+
+    @Override
+    public void initInternalList(){
+        List<Marker> markers = markerManager.getAllMarkers();
+
+        if(markers != null) {
+            for (int i = 0; i < markers.size(); i++) {
+                presenter.createMarker(markers.get(i), "");
+            }
+        }
     }
 
     @Override
@@ -63,8 +78,6 @@ public class MapInteractorImpl implements MapInteractor {
                             JSONObject jsonObject = new JSONObject(jsonData);
                             JSONArray jsonArray = jsonObject.getJSONArray(context.getResources().getString(R.string.json_favorites));
 
-                            List<Marker> markers = new ArrayList<>();
-
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject subJsonObject = jsonArray.getJSONObject(i);
 
@@ -74,8 +87,7 @@ public class MapInteractorImpl implements MapInteractor {
                                 marker.latitude = Double.valueOf(subJsonObject.getString(context.getResources().getString(R.string.json_latitude)));
                                 marker.longitude = Double.valueOf(subJsonObject.getString(context.getResources().getString(R.string.json_longitude)));
 
-                                markers.add(marker);
-                                presenter.createMarker(marker, "");
+                                markerManager.addMarker(marker);
                             }
 
                         } catch (JSONException e) {
