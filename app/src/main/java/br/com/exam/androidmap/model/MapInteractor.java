@@ -1,5 +1,7 @@
 package br.com.exam.androidmap.model;
 
+import java.util.List;
+
 import br.com.exam.androidmap.presenter.MapPresenter;
 
 public interface MapInteractor {
@@ -8,8 +10,10 @@ public interface MapInteractor {
 
     void searchAddress(String name);
 
-    void initFavoriteList();
+    void readCloudBookmarkList();
 
-    void initInternalList();
+    List<Marker> getMarkersList();
+
+    void addMarker(Marker marker);
 
 }

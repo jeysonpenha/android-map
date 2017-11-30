@@ -10,6 +10,7 @@
     <string name="last_zoom">lastZoom</string>
 
     <string name="fav_list_read">favListRead</string>
+    <string name="bookmarks_title">Bookmarks</string>
 
     <string name="init_mark_title">Your Actual Position!</string>
     <string name="init_mark_desc">Your are here! Well, is what your cellphone says...</string>
@@ -23,5 +24,11 @@
     <string name="json_longitude">longitude</string>
 
     <string name="favorite_url">http://www.mocky.io/v2/59dbaacc110000590007481d</string>
+
+    <string name="dialog_save">Save</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_save_title">New Bookmark</string>
+    <string name="dialog_save_desc">Give a name to the New Bookmark</string>
+    <string name="dialog_save_ok">Bookmark Saved!</string>
 
 </resources>

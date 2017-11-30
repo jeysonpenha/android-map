@@ -2,6 +2,8 @@ package br.com.exam.androidmap.presenter;
 
 import android.location.Address;
 
+import java.util.List;
+
 import br.com.exam.androidmap.model.Marker;
 
 public interface MapPresenter {
@@ -10,16 +12,18 @@ public interface MapPresenter {
 
     void goToLocation(double lat, double lon, float zoom);
 
-    void createMarker(Marker marker, String desc);
+    void drawMarker(Marker marker, String desc);
 
-    void goToFavorite(Marker marker);
+    void goToBookmark(Marker marker);
 
-    void deleteFavorite(Marker marker);
+    void deleteBookmark(Marker marker);
 
-    void addFavorite(Marker marker);
+    void addBookmark(double lat, double lon, String name);
 
-    void readFavoriteList();
+    void readCloudBookmarkList();
 
-    void initInternalList();
+    void initBookmarkList();
+
+    List<Marker> getBookmarkList();
 
 }

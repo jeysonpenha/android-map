@@ -1,5 +1,4 @@
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
@@ -21,19 +20,31 @@
 			android:id="@+id/main_content"
 			android:layout_width="match_parent"
 			android:layout_height="fill_parent"/>
-	    
-	    
+
 	    <RelativeLayout
 	        android:id="@+id/rel"
 	        android:layout_width="300dp"
-	        android:layout_gravity="left"
+	        android:layout_gravity="start"
 	        android:layout_height="match_parent"
 	        android:background="@color/main_color" >
+
+			<TextView
+				android:id="@+id/bookmark_title"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="sans-serif-condensed"
+				android:textSize="30sp"
+				android:textStyle="normal|bold"
+				android:text="@string/bookmarks_title"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/menu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+				android:layout_marginLeft="10dp"
+				android:layout_marginRight="10dp"
+				android:layout_below="@id/bookmark_title"
                 android:divider="@color/main_color"
                 android:background="@color/main_color"
                 />

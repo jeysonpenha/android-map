@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,13 +15,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -29,14 +31,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import br.com.exam.androidmap.R;
 import br.com.exam.androidmap.core.Util;
-import br.com.exam.androidmap.model.MapInteractor;
-import br.com.exam.androidmap.model.MapInteractorImpl;
 import br.com.exam.androidmap.presenter.MapPresenter;
-import br.com.exam.androidmap.presenter.MapPresenterImpl;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
@@ -52,13 +50,15 @@ public class MainMapFragment extends Fragment implements MainMapView {
     private Activity activity;
     private LocationManager locationManager;
     private LocationListener locationListener;
+    private Location actualLocation;
+
+    public void init(MapPresenter presenter){
+        this.presenter = presenter;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        MapInteractor interactor = new MapInteractorImpl(this.getContext());
-        presenter = new MapPresenterImpl(this, interactor);
 
         initFavoriteList();
         initLocationManager();
@@ -71,7 +71,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Code here executes on main thread after user presses button
+                showSaveDialog();
             }
         });
 
@@ -109,7 +109,10 @@ public class MainMapFragment extends Fragment implements MainMapView {
                 }
 
                 recoverLastPosition();
-                presenter.initInternalList();
+
+                if(presenter != null) {
+                    presenter.initBookmarkList();
+                }
             }
         });
 
@@ -165,7 +168,12 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     @Override
-    public void createMarker(final double latitude, final double longitude, final String title, final String desc) {
+    public void setPresenter(MapPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
+    public void drawMarker(final double latitude, final double longitude, final String title, final String desc) {
         final LatLng position = new LatLng(latitude, longitude);
 
         activity.runOnUiThread(new Runnable(){
@@ -248,7 +256,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
                 .getResources()
                 .getString(R.string.fav_list_read))) {
 
-            presenter.readFavoriteList();
+            presenter.initBookmarkList();
             SharedPreferences.Editor editor = settings.edit();
 
             editor.putBoolean(activity
@@ -261,7 +269,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     public void initStartPosition(Location location){
-        createMarker(
+        drawMarker(
                 location.getLatitude(),
                 location.getLongitude(),
                 activity.getResources().getString(R.string.init_mark_title),
@@ -282,6 +290,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
+                actualLocation = location;
                 initStartPosition(location);
             }
 
@@ -298,9 +307,9 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
     public void goToActualLocation(){
         if(checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            final Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if(lastKnownLocation != null) {
-                goToLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 10f);
+            actualLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if(actualLocation != null) {
+                goToLocation(actualLocation.getLatitude(), actualLocation.getLongitude(), 10f);
             } else {
                 LocationListener locationActualListener = new LocationListener() {
                     public void onLocationChanged(Location location) {
@@ -317,12 +326,47 @@ public class MainMapFragment extends Fragment implements MainMapView {
                     public void onProviderDisabled(String s) {}
                 };
 
-
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 100, locationActualListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 100, locationActualListener);
 
             }
         } else {
             Toast.makeText(activity, activity.getString(R.string.no_location_permission) , Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void showSaveDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setMessage(R.string.dialog_save_desc).setTitle(R.string.dialog_save_title);
+
+        final EditText input = new EditText(activity);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.dialog_save, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                if(actualLocation != null) {
+                    presenter.addBookmark(
+                            actualLocation.getLatitude(),
+                            actualLocation.getLongitude(),
+                            input.getText().toString());
+
+                    Toast.makeText(activity, activity.getString(R.string.dialog_save_ok) , Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Toast.makeText(activity, activity.getString(R.string.no_location_permission) , Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

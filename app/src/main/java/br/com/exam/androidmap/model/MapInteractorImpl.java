@@ -43,18 +43,13 @@ public class MapInteractorImpl implements MapInteractor {
     }
 
     @Override
-    public void initInternalList(){
+    public List<Marker> getMarkersList(){
         List<Marker> markers = markerManager.getAllMarkers();
-
-        if(markers != null) {
-            for (int i = 0; i < markers.size(); i++) {
-                presenter.createMarker(markers.get(i), "");
-            }
-        }
+        return markers;
     }
 
     @Override
-    public void initFavoriteList(){
+    public void readCloudBookmarkList(){
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -96,5 +91,10 @@ public class MapInteractorImpl implements MapInteractor {
                     }
                 }
         );
+    }
+
+    @Override
+    public void addMarker(Marker marker) {
+        markerManager.addMarker(marker);
     }
 }
