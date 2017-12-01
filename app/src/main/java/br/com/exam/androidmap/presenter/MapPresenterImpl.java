@@ -1,51 +1,37 @@
 package br.com.exam.androidmap.presenter;
 
+import android.location.Address;
+
 import java.util.List;
 
 import br.com.exam.androidmap.model.MapInteractor;
 import br.com.exam.androidmap.model.Marker;
-import br.com.exam.androidmap.view.MainActivityView;
-import br.com.exam.androidmap.view.MainMapView;
+import br.com.exam.androidmap.view.MainMapFragmentView;
 
-public class MapPresenterImpl implements MapPresenter {
+public class MapPresenterImpl implements MapPresenter, MapInteractor.OnSearchFinishedListener {
 
-    private MainMapView mainMapView;
-    private MainActivityView mainActivityView;
-
+    private MainMapFragmentView mainMapFragmentView;
     private MapInteractor mapInteractor;
 
-    public MapPresenterImpl(MainMapView mainMapView, MapInteractor mapInteractor, MainActivityView mainActivityView) {
-        this.mainMapView = mainMapView;
+    public MapPresenterImpl(MainMapFragmentView mainMapFragmentView, MapInteractor mapInteractor) {
+        this.mainMapFragmentView = mainMapFragmentView;
         this.mapInteractor = mapInteractor;
-        this.mainActivityView = mainActivityView;
-
-        this.mapInteractor.init(this);
-        this.mainMapView.setPresenter(this);
+        this.mainMapFragmentView.setPresenter(this);
     }
 
     @Override
     public void searchAddress(String name){
-        mapInteractor.searchAddress(name);
+        mapInteractor.searchAddress(name, this);
     }
 
     @Override
     public void goToLocation(double lat, double lon, float zoom) {
-        mainActivityView.closeDrawer();
-        mainMapView.goToLocation(lat, lon, zoom);
+        mainMapFragmentView.goToLocation(lat, lon, zoom);
     }
 
     @Override
     public void drawMarker(Marker marker, String desc, int type){
-        mainMapView.drawMarker(marker.latitude, marker.longitude, marker.name, desc, type);
-    }
-
-    @Override
-    public void deleteBookmark(Marker marker) {
-        mainActivityView.closeDrawer();
-        mapInteractor.removeMarker(marker.id);
-        mapInteractor.getMarkersList();
-        mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
-        drawAllBookmarkList();
+        mainMapFragmentView.drawMarker(marker.latitude, marker.longitude, marker.name, desc, type);
     }
 
     @Override
@@ -58,41 +44,26 @@ public class MapPresenterImpl implements MapPresenter {
 
         mapInteractor.addMarker(marker);
 
-        mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
-    }
-
-    @Override
-    public void readCloudBookmarkList() {
-        mapInteractor.readCloudBookmarkList();
-    }
-
-    @Override
-    public void updateBookmarkList(){
-        mainActivityView.updateBookmarkList(mapInteractor.getMarkersList());
-        drawAllBookmarkList();
+        mainMapFragmentView.updateBookmarkList(mapInteractor.getMarkersList());
     }
 
     @Override
     public void drawAllBookmarkList() {
-        mainMapView.cleanMarkers();
-
+        mainMapFragmentView.cleanMarkers();
         List<Marker> markers = mapInteractor.getMarkersList();
-
-        if(markers != null) {
-            for (int i = 0; i < markers.size(); i++) {
-                drawMarker(markers.get(i), "", 0);
-            }
-        }
+        mainMapFragmentView.drawAllMarkers(markers);
     }
 
     @Override
-    public List<Marker> getBookmarkList() {
-        List<Marker> markers = mapInteractor.getMarkersList();
+    public void onSearchFinished(Address address) {
+        goToLocation(address.getLatitude(), address.getLongitude(), 15f);
 
-        if(markers != null) {
-            return markers;
-        } else {
-            return null;
-        }
+        Marker marker = new Marker();
+
+        marker.name = address.getAddressLine(0);
+        marker.latitude = address.getLatitude();
+        marker.longitude = address.getLongitude();
+
+        drawMarker(marker, "", 1);
     }
 }

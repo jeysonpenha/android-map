@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.List;
 
 import br.com.exam.androidmap.R;
-import br.com.exam.androidmap.presenter.MapPresenter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -20,7 +19,6 @@ import okhttp3.Response;
 public class MapInteractorImpl implements MapInteractor {
 
     private Context context;
-    private MapPresenter presenter;
     private SQLiteManager sqliteManager;
     private MarkerManager markerManager;
 
@@ -31,13 +29,8 @@ public class MapInteractorImpl implements MapInteractor {
     }
 
     @Override
-    public void init(MapPresenter presenter) {
-        this.presenter = presenter;
-    }
-
-    @Override
-    public void searchAddress(String name) {
-        GeocodeTask geocodeTask = new GeocodeTask(context, presenter);
+    public void searchAddress(String name, OnSearchFinishedListener listener) {
+        GeocodeTask geocodeTask = new GeocodeTask(context, listener);
         geocodeTask.execute(name);
     }
 
@@ -48,7 +41,7 @@ public class MapInteractorImpl implements MapInteractor {
     }
 
     @Override
-    public void readCloudBookmarkList(){
+    public void readCloudBookmarkList(final OnCloudBookmarkListener listener){
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -84,7 +77,8 @@ public class MapInteractorImpl implements MapInteractor {
                                 markerManager.addMarker(marker);
                             }
 
-                            presenter.updateBookmarkList();
+
+                            listener.onCloudBookmarkFinished();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -103,4 +97,6 @@ public class MapInteractorImpl implements MapInteractor {
     public void removeMarker(int id) {
         markerManager.deleteMarker(id);
     }
+
+
 }

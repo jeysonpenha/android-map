@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,18 +15,18 @@ import java.util.List;
 
 import br.com.exam.androidmap.R;
 import br.com.exam.androidmap.model.Marker;
-import br.com.exam.androidmap.presenter.MapPresenter;
+import br.com.exam.androidmap.presenter.FavoritePresenter;
 
 public class MarkerAdapter extends RecyclerView.Adapter {
 
     private List<Marker> markers;
     private final Context context;
-    private final MapPresenter presenter;
+    private final FavoritePresenter favoritePresenter;
 
-    public MarkerAdapter(Context context, MapPresenter presenter) {
+    public MarkerAdapter(Context context, FavoritePresenter presenter) {
         this.markers = presenter.getBookmarkList();
         this.context = context;
-        this.presenter = presenter;
+        this.favoritePresenter = presenter;
     }
 
     @Override
@@ -63,7 +61,7 @@ public class MarkerAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 Marker marker = markers.get(pos);
-                presenter.goToLocation(marker.latitude, marker.longitude, 15f);
+                favoritePresenter.goToLocationFromFavorite(marker.latitude, marker.longitude, 15f);
             }
         });
     }
@@ -102,7 +100,7 @@ public class MarkerAdapter extends RecyclerView.Adapter {
         builder.setPositiveButton(R.string.dialog_delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Marker marker = markers.get(position);
-                presenter.deleteBookmark(marker);
+                favoritePresenter.deleteBookmark(marker);
                 Toast.makeText(context, context.getString(R.string.dialog_delete_ok) , Toast.LENGTH_SHORT).show();
             }
         });

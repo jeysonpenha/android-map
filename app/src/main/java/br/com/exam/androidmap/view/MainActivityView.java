@@ -10,4 +10,8 @@ public interface MainActivityView {
 
     void closeDrawer();
 
+    void goToLocationFromFavorite(double lat, double lon, float zoom);
+
+    void updateMarkersFromFavorite(List<Marker> markers);
+
 }

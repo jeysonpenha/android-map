@@ -10,16 +10,15 @@ import java.io.IOException;
 import java.util.List;
 
 import br.com.exam.androidmap.R;
-import br.com.exam.androidmap.presenter.MapPresenter;
 
 public class GeocodeTask extends AsyncTask<String, Void, Address> {
 
     private Context context;
-    private MapPresenter presenter;
+    private MapInteractor.OnSearchFinishedListener listener;
 
-    public GeocodeTask(Context context, MapPresenter presenter) {
+    public GeocodeTask(Context context, MapInteractor.OnSearchFinishedListener listener) {
         this.context = context;
-        this.presenter = presenter;
+        this.listener = listener;
     }
 
     @Override
@@ -45,15 +44,9 @@ public class GeocodeTask extends AsyncTask<String, Void, Address> {
     protected void onPostExecute(Address address) {
         if(address != null) {
             Toast.makeText(context, context.getString(R.string.dialog_search_ok) , Toast.LENGTH_SHORT).show();
-            presenter.goToLocation(address.getLatitude(), address.getLongitude(), 15f);
 
-            Marker marker = new Marker();
+            listener.onSearchFinished(address);
 
-            marker.name = address.getAddressLine(0);
-            marker.latitude = address.getLatitude();
-            marker.longitude = address.getLongitude();
-
-            presenter.drawMarker(marker, "", 1);
         } else {
             Toast.makeText(context, context.getString(R.string.dialog_search_error) , Toast.LENGTH_SHORT).show();
         }

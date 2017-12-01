@@ -35,13 +35,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
 import br.com.exam.androidmap.R;
 import br.com.exam.androidmap.core.Util;
+import br.com.exam.androidmap.model.MapInteractor;
+import br.com.exam.androidmap.model.MapInteractorImpl;
 import br.com.exam.androidmap.presenter.MapPresenter;
+import br.com.exam.androidmap.presenter.MapPresenterImpl;
 
 import static android.support.v4.content.ContextCompat.checkSelfPermission;
 
-public class MainMapFragment extends Fragment implements MainMapView {
+public class MainMapFragment extends Fragment implements MainMapFragmentView {
 
     public static final int LOCATION_PERMISSION_ID = 150;
     public static final String PREFS_MAP = "mapsPref";
@@ -54,18 +59,17 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
     private GoogleMap googleMap;
     private MapView mapView;
-    private Activity activity;
+    private MainActivity activity;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location actualLocation;
 
-    public void init(MapPresenter presenter){
-        this.presenter = presenter;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        MapInteractor interactor = new MapInteractorImpl(activity);
+        presenter = new MapPresenterImpl(this, interactor);
 
         initLocationManager();
 
@@ -131,8 +135,8 @@ public class MainMapFragment extends Fragment implements MainMapView {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        if (context instanceof Activity){
-            activity =(Activity) context;
+        if (context instanceof MainActivity){
+            activity =(MainActivity) context;
         }
     }
 
@@ -142,7 +146,9 @@ public class MainMapFragment extends Fragment implements MainMapView {
         super.onAttach(activity);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            this.activity = activity;
+            if (activity instanceof MainActivity){
+                this.activity =(MainActivity) activity;
+            }
         }
     }
 
@@ -212,6 +218,13 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     @Override
+    public void drawAllMarkers(List<br.com.exam.androidmap.model.Marker> markers) {
+        for (int i = 0; i < markers.size(); i++) {
+            drawMarker(markers.get(i).latitude, markers.get(i).longitude, markers.get(i).name, "", MARKER_TYPE_FAV);
+        }
+    }
+
+    @Override
     public void cleanMarkers(){
         activity.runOnUiThread(new Runnable(){
             public void run(){
@@ -238,6 +251,11 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
+    }
+
+    @Override
+    public void updateBookmarkList(List<br.com.exam.androidmap.model.Marker> markers){
+        activity.updateBookmarkList(markers);
     }
 
     public void storeLastPosition(double lat, double lon, float zoom) {

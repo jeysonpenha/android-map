@@ -17,20 +17,21 @@ import br.com.exam.androidmap.R;
 import br.com.exam.androidmap.model.MapInteractor;
 import br.com.exam.androidmap.model.MapInteractorImpl;
 import br.com.exam.androidmap.model.Marker;
-import br.com.exam.androidmap.presenter.MapPresenter;
-import br.com.exam.androidmap.presenter.MapPresenterImpl;
+import br.com.exam.androidmap.presenter.FavoritePresenterImpl;
 
 import static br.com.exam.androidmap.view.MainMapFragment.PREFS_MAP;
 
 public class MainActivity extends AppCompatActivity implements MainActivityView {
 
-    DrawerLayout drawer;
-    RecyclerView menu;
-    Toolbar toolbar;
+    private DrawerLayout drawer;
+    private RecyclerView menu;
+    private Toolbar toolbar;
 
-    ActionBarDrawerToggle toggle;
-    MapPresenter presenter;
-    MarkerAdapter adapter;
+    private ActionBarDrawerToggle toggle;
+    private FavoritePresenterImpl favoritePresenter;
+    private MarkerAdapter adapter;
+
+    private MainMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +46,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         initActionBar();
 
         MapInteractor interactor = new MapInteractorImpl(this);
+        favoritePresenter = new FavoritePresenterImpl(this, interactor);
 
-        MainMapFragment mapFragment = (MainMapFragment) Fragment.instantiate(this, MainMapFragment.class.getName());
-
-        presenter = new MapPresenterImpl(mapFragment, interactor, this);
-
-        mapFragment.init(presenter);
-
-        adapter = new MarkerAdapter(this, presenter);
+        mapFragment = (MainMapFragment) Fragment.instantiate(this, MainMapFragment.class.getName());
+        adapter = new MarkerAdapter(this, favoritePresenter);
         menu.setAdapter(adapter);
 
         readCloudBookmarkList();
@@ -92,21 +89,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityView 
         drawer.closeDrawers();
     }
 
+    @Override
+    public void goToLocationFromFavorite(double lat, double lon, float zoom) {
+        mapFragment.goToLocation(lat, lon, zoom);
+    }
+
     public void readCloudBookmarkList(){
         SharedPreferences settings = this.getSharedPreferences(PREFS_MAP, 0);
-        if(!settings.contains(this
+        favoritePresenter.readCloudBookmarkList(settings, this
                 .getResources()
-                .getString(R.string.fav_list_read))) {
+                .getString(R.string.fav_list_read));
+    }
 
-            presenter.readCloudBookmarkList();
-            SharedPreferences.Editor editor = settings.edit();
-
-            editor.putBoolean(this
-                            .getResources()
-                            .getString(R.string.fav_list_read)
-                    , true);
-
-            editor.apply();
-        }
+    @Override
+    public void updateMarkersFromFavorite(List<Marker> markers){
+        mapFragment.cleanMarkers();
+        mapFragment.drawAllMarkers(markers);
     }
 }
