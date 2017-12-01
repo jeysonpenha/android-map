@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">androidmap</string>
+    <string name="drawer_open">abre</string>
+    <string name="drawer_close">fecha</string>
+
+    <string name="debug_category">DEBUG</string>
+
+    <string name="last_latitude">lastLat</string>
+    <string name="last_longitude">lastLon</string>
+    <string name="last_zoom">lastZoom</string>
+
+    <string name="fav_list_read">favListRead</string>
+    <string name="bookmarks_title">Favoritos</string>
+
+    <string name="init_mark_title">Sua posição atual!</string>
+    <string name="init_mark_desc">Você está aqui! Bom, é o que seu telefone disse...</string>
+
+    <string name="no_location_permission">Você precisa dar permissão de localização.</string>
+
+    <string name="json_favorites">favorites</string>
+    <string name="json_name">name</string>
+    <string name="json_latitude">latitude</string>
+    <string name="json_longitude">longitude</string>
+
+    <string name="favorite_url">http://www.mocky.io/v2/59dbaacc110000590007481d</string>
+
+    <string name="dialog_save">Salvar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <string name="dialog_save_title">Novo Favorito</string>
+    <string name="dialog_save_desc">Dar um nome para o seu novo favorito</string>
+    <string name="dialog_save_ok">Favorito Salvo!</string>
+
+    <string name="dialog_delete">Deletar</string>
+    <string name="dialog_delete_title">Deletar Favorito</string>
+    <string name="dialog_delete_desc">Deseja mesmo deletar o favorito?</string>
+    <string name="dialog_delete_ok">Favorito Deletado!</string>
+
+    <string name="dialog_search">Buscar</string>
+    <string name="dialog_search_title">Buscar Endereço</string>
+    <string name="dialog_search_desc">Escreva um endereço para buscar</string>
+    <string name="dialog_search_process">Buscando endereço...</string>
+    <string name="dialog_search_ok">Endereço Encontrado!</string>
+    <string name="dialog_search_error">Endereço não Encontrado!</string>
+
+</resources>
