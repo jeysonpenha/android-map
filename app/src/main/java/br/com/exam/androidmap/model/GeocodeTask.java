@@ -45,7 +45,15 @@ public class GeocodeTask extends AsyncTask<String, Void, Address> {
     protected void onPostExecute(Address address) {
         if(address != null) {
             Toast.makeText(context, context.getString(R.string.dialog_search_ok) , Toast.LENGTH_SHORT).show();
-            presenter.goToLocation(address.getLatitude(), address.getLongitude(), 10f);
+            presenter.goToLocation(address.getLatitude(), address.getLongitude(), 15f);
+
+            Marker marker = new Marker();
+
+            marker.name = address.getAddressLine(0);
+            marker.latitude = address.getLatitude();
+            marker.longitude = address.getLongitude();
+
+            presenter.drawMarker(marker, "", 1);
         } else {
             Toast.makeText(context, context.getString(R.string.dialog_search_error) , Toast.LENGTH_SHORT).show();
         }

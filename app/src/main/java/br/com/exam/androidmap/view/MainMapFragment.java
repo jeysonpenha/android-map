@@ -28,8 +28,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import br.com.exam.androidmap.R;
@@ -42,6 +45,10 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
     public static final int LOCATION_PERMISSION_ID = 150;
     public static final String PREFS_MAP = "mapsPref";
+
+    public static final int MARKER_TYPE_FAV = 0;
+    public static final int MARKER_TYPE_SCH = 1;
+    public static final int MARKER_TYPE_ACT = 2;
 
     private MapPresenter presenter;
 
@@ -158,8 +165,8 @@ public class MainMapFragment extends Fragment implements MainMapView {
         switch ( requestCode ) {
             case LOCATION_PERMISSION_ID: {
                 if ( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
-                    if(checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 100, locationListener);
+                    if( checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ) {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 10000, locationListener);
                     }
                 }
             }
@@ -172,16 +179,34 @@ public class MainMapFragment extends Fragment implements MainMapView {
     }
 
     @Override
-    public void drawMarker(final double latitude, final double longitude, final String title, final String desc) {
+    public void drawMarker(final double latitude, final double longitude, final String title, final String desc, final int type) {
         final LatLng position = new LatLng(latitude, longitude);
+
+        final BitmapDescriptor icon;
+
+        if(type == MARKER_TYPE_FAV) {
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.mark_fav);
+        } else if(type == MARKER_TYPE_SCH) {
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.mark_sch);
+        } else if(type == MARKER_TYPE_ACT) {
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.mark_act);
+        } else {
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.mark_fav);
+        }
 
         activity.runOnUiThread(new Runnable(){
             public void run(){
-                googleMap.addMarker(
+
+                Marker marker = googleMap.addMarker(
                         new MarkerOptions()
                                 .position(position)
                                 .title(title)
+                                .icon(icon)
                                 .snippet(desc));
+
+                if(type == MARKER_TYPE_ACT || type == MARKER_TYPE_SCH) {
+                    marker.showInfoWindow();
+                }
             }
         });
     }
@@ -267,7 +292,8 @@ public class MainMapFragment extends Fragment implements MainMapView {
                 location.getLatitude(),
                 location.getLongitude(),
                 activity.getResources().getString(R.string.init_mark_title),
-                activity.getResources().getString(R.string.init_mark_desc));
+                activity.getResources().getString(R.string.init_mark_desc),
+                MARKER_TYPE_ACT);
     }
 
     public void goToStartPosition(Location location){
@@ -322,7 +348,7 @@ public class MainMapFragment extends Fragment implements MainMapView {
                     public void onProviderDisabled(String s) {}
                 };
 
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 100, locationActualListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 10000, locationActualListener);
 
             }
         } else {
@@ -378,7 +404,6 @@ public class MainMapFragment extends Fragment implements MainMapView {
 
         builder.setPositiveButton(R.string.dialog_search, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
                 presenter.searchAddress(input.getText().toString());
 
             }

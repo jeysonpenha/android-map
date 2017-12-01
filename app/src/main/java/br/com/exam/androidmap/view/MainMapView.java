@@ -6,7 +6,7 @@ public interface MainMapView {
 
     void setPresenter(MapPresenter presenter);
 
-    void drawMarker(double latitude, double longitude, String title, String desc);
+    void drawMarker(double latitude, double longitude, String title, String desc, int type);
 
     void goToLocation(double latitude, double longitude, float zoom);
 

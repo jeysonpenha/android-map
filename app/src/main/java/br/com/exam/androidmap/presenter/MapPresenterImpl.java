@@ -35,8 +35,8 @@ public class MapPresenterImpl implements MapPresenter {
     }
 
     @Override
-    public void drawMarker(Marker marker, String desc){
-        mainMapView.drawMarker(marker.latitude, marker.longitude, marker.name, desc);
+    public void drawMarker(Marker marker, String desc, int type){
+        mainMapView.drawMarker(marker.latitude, marker.longitude, marker.name, desc, type);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MapPresenterImpl implements MapPresenter {
 
         if(markers != null) {
             for (int i = 0; i < markers.size(); i++) {
-                drawMarker(markers.get(i), "");
+                drawMarker(markers.get(i), "", 0);
             }
         }
     }

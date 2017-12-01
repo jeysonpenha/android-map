@@ -10,7 +10,7 @@ public interface MapPresenter {
 
     void goToLocation(double lat, double lon, float zoom);
 
-    void drawMarker(Marker marker, String desc);
+    void drawMarker(Marker marker, String desc, int type);
 
     void deleteBookmark(Marker marker);
 

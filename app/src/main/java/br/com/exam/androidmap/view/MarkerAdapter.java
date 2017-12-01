@@ -63,7 +63,7 @@ public class MarkerAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 Marker marker = markers.get(pos);
-                presenter.goToLocation(marker.latitude, marker.longitude, 20f);
+                presenter.goToLocation(marker.latitude, marker.longitude, 15f);
             }
         });
     }
